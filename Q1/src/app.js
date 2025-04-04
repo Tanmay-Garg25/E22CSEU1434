@@ -7,25 +7,48 @@ const axios = require('axios');
 
 
 const primeurl = 'http://20.244.56.144/evaluation-service/primes';
-const authHeader = { Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJNYXBDbGFpbXMiOnsiZXhwIjoxNzQzNzQ3NDUyLCJpYXQiOjE3NDM3NDcxNTIsImlzcyI6IkFmZm9yZG1lZCIsImp0aSI6ImE1Y2U4YjY3LTZkOGItNDA0Yy05ZjcyLTg0ZDg1M2QzZTE1NyIsInN1YiI6ImUyMmNzZXUxNDM0QGJlbm5ldHQuZWR1LmluIn0sImVtYWlsIjoiZTIyY3NldTE0MzRAYmVubmV0dC5lZHUuaW4iLCJuYW1lIjoidGFubWF5Iiwicm9sbE5vIjoiZTIyY3NldTE0MzQiLCJhY2Nlc3NDb2RlIjoicnRDSFpKIiwiY2xpZW50SUQiOiJhNWNlOGI2Ny02ZDhiLTQwNGMtOWY3Mi04NGQ4NTNkM2UxNTciLCJjbGllbnRTZWNyZXQiOiJ2YkFCYlpIWnlIVU5Ga0t3In0.6KRt3OKRCysNSfIANpjRlIlm52S4bWPxIYrLtX3qzkg' };
+// const authHeader = { Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJNYXBDbGFpbXMiOnsiZXhwIjoxNzQzNzQ1MDcyLCJpYXQiOjE3NDM3NDQ3NzIsImlzcyI6IkFmZm9yZG1lZCIsImp0aSI6ImE1Y2U4YjY3LTZkOGItNDA0Yy05ZjcyLTg0ZDg1M2QzZTE1NyIsInN1YiI6ImUyMmNzZXUxNDM0QGJlbm5ldHQuZWR1LmluIn0sImVtYWlsIjoiZTIyY3NldTE0MzRAYmVubmV0dC5lZHUuaW4iLCJuYW1lIjoidGFubWF5Iiwicm9sbE5vIjoiZTIyY3NldTE0MzQiLCJhY2Nlc3NDb2RlIjoicnRDSFpKIiwiY2xpZW50SUQiOiJhNWNlOGI2Ny02ZDhiLTQwNGMtOWY3Mi04NGQ4NTNkM2UxNTciLCJjbGllbnRTZWNyZXQiOiJ2YkFCYlpIWnlIVU5Ga0t3In0.1ZcRJBEh4mgYAC4qZ4eVhBIgq69dkdhxPBaYj5pZGeU' };
 
 const evenurl = 'http://20.244.56.144/evaluation-service/even';
 const fibourl = 'http://20.244.56.144/evaluation-service/fibo';
 const randurl = 'http://20.244.56.144/evaluation-service/rand';
 
+async function getAppToken() {
+  try {
+    const response = await axios.post(`http://20.244.56.144/evaluation-service/auth`, {
+      email: "e22cseu1434@bennett.edu.in",
+      name: "Tanmay",
+      rollNo: "E22CSEU1434",
+      accessCode: "rtCHZJ",
+      clientID: "a5ce8b67-6d8b-404c-9f72-84d853d3e157",
+      clientSecret: "vbABbZHZyHUNFkKw"
+    });
 
+    const token = response.data["token_type"] + " " + response.data["access_token"]
 
+    return token
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
 
 const windowSize = 10;
-
 
 let numbers = [];
 
 let average = null;
 
+function FetchToken(){
+    const response = axios.get(evenurl, { headers: authHeader });
+
+}
+
 async function fetchEvenNumbers() {
   try {
-    const response = await axios.get(evenurl, { headers: authHeader });
+    const token = await getAppToken()
+    const authHeader = { Authorization: token}
+    const response = await axios.get(evenurl, { headers: authHeader }); 
 
     for (const number of response.data["numbers"]) {
       numbers.push(number);
@@ -37,10 +60,11 @@ async function fetchEvenNumbers() {
 
 async function fetchPrimeNumbers() {
   try {
+    const token = await getAppToken();
+    const authHeader = { Authorization: token};
     const response = await axios.get(primeurl, { headers: authHeader });
-    console.log(response);
 
-    for (const number of response.data["numbers"]) {
+    for (const number of response.data) {
       numbers.push(number);
     }
   } catch (error) {
@@ -50,9 +74,11 @@ async function fetchPrimeNumbers() {
 
 async function fetchRandNumbers() {
   try {
+    const token = await getAppToken();
+    const authHeader = { Authorization: token};
     const response = await axios.get(randurl, { headers: authHeader });
 
-    for (const number of response.data["numbers"]) {
+    for (const number of response.data) {
       numbers.push(number);
     }
   } catch (error) {
@@ -62,9 +88,11 @@ async function fetchRandNumbers() {
 
 async function fetchFiboNumbers() {
   try {
+    const token = await getAppToken();
+    const authHeader = { Authorization: token};
     const response = await axios.get(fibourl, { headers: authHeader });
 
-    for (const number of response.data["numbers"]) {
+    for (const number of response.data) {
       numbers.push(number);
     }
   } catch (error) {
